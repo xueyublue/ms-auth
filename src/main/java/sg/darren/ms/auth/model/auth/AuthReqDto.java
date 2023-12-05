@@ -1,4 +1,4 @@
-package sg.darren.ms.auth.model.dto;
+package sg.darren.ms.auth.model.auth;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -9,7 +9,7 @@ import lombok.NoArgsConstructor;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthRequestDto {
+public class AuthReqDto {
 
     private String username;
     private String password;

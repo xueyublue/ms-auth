@@ -9,35 +9,26 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
 
-import java.util.*;
+import java.util.Date;
 
 @Entity
-@Table(name = "tbl_user")
+@Table(name = "tbl_role")
 @DynamicUpdate
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+public class RoleEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false, updatable = false, unique = true)
-    private String username;
+    @Column(name = "role_id", nullable = false, updatable = false, unique = true)
+    private String roleId;
 
-    @Column(name = "password", nullable = false)
-    private String password;
-
-    @Column(name = "full_name")
-    private String fullName;
-
-    @Column(name = "email", nullable = false, unique = true)
-    private String email;
-
-    @Column(name = "roles", nullable = false)
-    private String roles;
+    @Column(name = "role_name", nullable = false)
+    private String roleName;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp
