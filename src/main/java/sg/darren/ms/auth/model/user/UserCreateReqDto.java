@@ -15,7 +15,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserRegisterReqDto {
+public class UserCreateReqDto {
 
     @NotBlank
     private String username;

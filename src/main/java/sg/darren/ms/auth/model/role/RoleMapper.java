@@ -11,7 +11,7 @@ public class RoleMapper {
 
     private final ModelMapper modelMapper;
 
-    public RoleEntity registerDtoToEntity(RoleRegisterReqDto dto) {
+    public RoleEntity createDtoToEntity(RoleCreateReqDto dto) {
         return modelMapper.map(dto, RoleEntity.class);
     }
 

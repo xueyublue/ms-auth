@@ -7,6 +7,7 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.web.bind.annotation.*;
+import sg.darren.ms.auth.exception.UnauthorizedException;
 import sg.darren.ms.auth.model.auth.AuthReqDto;
 import sg.darren.ms.auth.service.JwtService;
 import sg.darren.ms.auth.service.UserService;
@@ -38,7 +39,7 @@ public class AuthController {
         if (authentication.isAuthenticated()) {
             return jwtService.generateToken(authRequest.getUsername());
         } else {
-            throw new UsernameNotFoundException("invalid user request !");
+            throw new UnauthorizedException("Unauthorized.");
         }
     }
 

@@ -15,9 +15,16 @@ public class UserMapper {
     private final ModelMapper modelMapper;
     private final PasswordEncoder encoder;
 
-    public UserEntity registerDtoToEntity(UserRegisterReqDto dto) {
+    public UserEntity createDtoToEntity(UserCreateReqDto dto) {
         UserEntity entity = modelMapper.map(dto, UserEntity.class);
         entity.setPassword(encoder.encode(dto.getPassword()));
+        entity.setRoles(String.join(",", dto.getRoles()));
+        return entity;
+    }
+
+    public UserEntity updateDtoToEntity(UserUpdateReqDto dto, UserEntity entity) {
+        entity.setFullName(dto.getFullName());
+        entity.setEmail(dto.getEmail());
         entity.setRoles(String.join(",", dto.getRoles()));
         return entity;
     }

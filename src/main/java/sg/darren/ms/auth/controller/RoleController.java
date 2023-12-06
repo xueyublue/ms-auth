@@ -5,7 +5,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import sg.darren.ms.auth.model.role.RoleRegisterReqDto;
+import sg.darren.ms.auth.model.role.RoleCreateReqDto;
 import sg.darren.ms.auth.service.RoleService;
 
 @RestController
@@ -16,7 +16,7 @@ public class RoleController {
     private final RoleService roleService;
 
     @PostMapping("/create")
-    public String create(@RequestBody RoleRegisterReqDto dto) {
+    public String create(@RequestBody RoleCreateReqDto dto) {
         roleService.createRole(dto);
         return "success";
     }
