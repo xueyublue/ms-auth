@@ -14,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 public class UserResDto {
 
+    private int id;
     private String username;
     private String fullName;
     private String email;

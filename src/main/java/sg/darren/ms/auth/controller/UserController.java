@@ -16,9 +16,8 @@ public class UserController {
     private final UserService userService;
 
     @PostMapping("/create")
-    public String create(@RequestBody @Valid UserRegisterReqDto dto) {
-        userService.create(dto);
-        return "success";
+    public UserResDto create(@RequestBody @Valid UserRegisterReqDto dto) {
+        return userService.create(dto);
     }
 
     @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
