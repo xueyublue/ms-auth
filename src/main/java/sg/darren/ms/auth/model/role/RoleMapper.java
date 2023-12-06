@@ -12,7 +12,19 @@ public class RoleMapper {
     private final ModelMapper modelMapper;
 
     public RoleEntity createDtoToEntity(RoleCreateReqDto dto) {
-        return modelMapper.map(dto, RoleEntity.class);
+        return RoleEntity.builder()
+                .roleId(dto.getRoleId())
+                .roleName(dto.getRoleName())
+                .build();
+    }
+
+    public RoleEntity updateDtoToEntity(RoleUpdateReqDto dto, RoleEntity entity) {
+        entity.setRoleName(dto.getRoleName());
+        return entity;
+    }
+
+    public RoleResDto entityToResDto(RoleEntity entity) {
+        return modelMapper.map(entity, RoleResDto.class);
     }
 
 }

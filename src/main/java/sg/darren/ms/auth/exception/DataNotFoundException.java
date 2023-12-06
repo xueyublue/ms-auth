@@ -18,4 +18,8 @@ public class DataNotFoundException extends RuntimeException {
         return new DataNotFoundException(String.format("Username %s not found!", username));
     }
 
+    public static DataNotFoundException roleIdNotFound(String roleId) {
+        return new DataNotFoundException(String.format("Role ID %s not found!", roleId));
+    }
+
 }
