@@ -17,7 +17,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
 import sg.darren.ms.auth.filter.JwtAuthFilter;
-import sg.darren.ms.auth.service.UserService;
+import sg.darren.ms.auth.service.CustUserDetailsService;
 
 @Configuration
 @EnableWebSecurity
@@ -30,7 +30,7 @@ public class SecurityConfig {
     // User Creation
     @Bean
     public UserDetailsService userDetailsService() {
-        return new UserService();
+        return new CustUserDetailsService();
     }
 
     // Configuring HttpSecurity
