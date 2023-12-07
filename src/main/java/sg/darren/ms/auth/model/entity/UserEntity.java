@@ -7,9 +7,12 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
+import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
+import org.hibernate.type.SqlTypes;
 
-import java.util.*;
+import java.util.Date;
+import java.util.List;
 
 @Entity
 @Table(name = "tbl_user")
@@ -36,8 +39,9 @@ public class UserEntity {
     @Column(name = "email", nullable = false)
     private String email;
 
+    @JdbcTypeCode(SqlTypes.JSON)
     @Column(name = "roles", nullable = false)
-    private String roles;
+    private List<String> roles;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

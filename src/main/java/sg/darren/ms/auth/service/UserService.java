@@ -12,6 +12,7 @@ import sg.darren.ms.auth.model.user.UserResDto;
 import sg.darren.ms.auth.model.user.UserUpdateReqDto;
 import sg.darren.ms.auth.repository.UserRepository;
 
+import java.util.Arrays;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -73,7 +74,7 @@ public class UserService {
     }
 
     public void getHighestTokenValid(String username) {
-        String roles = userRepository.findByUsername(username).getRoles();
+        List<String> roles = userRepository.findByUsername(username).getRoles();
         // TODO:
     }
 
