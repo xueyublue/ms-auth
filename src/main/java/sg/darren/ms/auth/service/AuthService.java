@@ -8,12 +8,11 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.stereotype.Service;
 import sg.darren.ms.auth.exception.UnauthorizedException;
 import sg.darren.ms.auth.model.auth.AuthReqDto;
 import sg.darren.ms.auth.model.auth.AuthResDto;
-import sg.darren.ms.auth.model.auth.CustUserDetails;
+import sg.darren.ms.auth.model.user.CustUserDetails;
 
 import java.util.Date;
 import java.util.Objects;
@@ -24,16 +23,15 @@ import java.util.stream.Collectors;
 @Slf4j
 public class AuthService {
 
-    private final JwtService jwtService;
+    private final JwtTokenService jwtTokenService;
     private final AuthenticationManager authenticationManager;
     private final HttpServletRequest httpServletRequest;
-    private final UserDetailsService userDetailsService;
 
     public String loginAndGenerateToken(AuthReqDto dto) {
         Authentication auth = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
         Authentication authentication = authenticationManager.authenticate(auth);
         if (authentication.isAuthenticated()) {
-            return jwtService.generateToken(dto.getUsername());
+            return jwtTokenService.generateToken(dto.getUsername());
         } else {
             throw new UnauthorizedException("Unauthorized.");
         }
@@ -58,8 +56,8 @@ public class AuthService {
                         .collect(Collectors.toList()))
                 .accountExpired(!userDetails.isAccountNonExpired())
                 .accountLocked(!userDetails.isAccountNonLocked())
-                .accountCredentialsExpired(!userDetails.isCredentialsNonExpired())
-                .accountEnabled(userDetails.isEnabled())
+                .credentialsExpired(!userDetails.isCredentialsNonExpired())
+                .accountDisabled(!userDetails.isEnabled())
                 .validationDate(new Date())
                 .build();
     }

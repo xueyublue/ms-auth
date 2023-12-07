@@ -17,10 +17,10 @@ public class AuthResDto {
     private String token;
     private String username;
     private List<String> roles;
-    private Date validationDate;
     private boolean accountExpired;
     private boolean accountLocked;
-    private boolean accountCredentialsExpired;
-    private boolean accountEnabled;
+    private boolean credentialsExpired;
+    private boolean accountDisabled;
+    private Date validationDate;
 
 }

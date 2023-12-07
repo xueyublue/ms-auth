@@ -55,7 +55,7 @@ public class RoleService {
     public RoleResDto updateByRoleId(String roleId, RoleUpdateReqDto dto) {
         RoleEntity entity = roleRepository.findByRoleId(roleId);
         if (Objects.isNull(entity)) {
-            throw DataNotFoundException.usernameNotFound(roleId);
+            throw DataNotFoundException.roleIdNotFound(roleId);
         }
         entity = roleRepository.save(roleMapper.updateDtoToEntity(dto, entity));
         return roleMapper.entityToResDto(entity);
@@ -63,7 +63,7 @@ public class RoleService {
 
     public void deleteByRoleId(String roleId) {
         if (!isRoleIdExists(roleId)) {
-            throw DataNotFoundException.usernameNotFound(roleId);
+            throw DataNotFoundException.roleIdNotFound(roleId);
         }
         roleRepository.deleteByRoleId(roleId);
     }

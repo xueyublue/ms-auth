@@ -1,4 +1,4 @@
-package sg.darren.ms.auth.model.auth;
+package sg.darren.ms.auth.model.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;

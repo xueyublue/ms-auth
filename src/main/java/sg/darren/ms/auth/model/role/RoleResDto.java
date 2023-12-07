@@ -4,6 +4,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import sg.darren.ms.auth.model.enums.TokenValidUnitEnum;
 
 import java.util.Date;
 import java.util.List;
@@ -17,6 +18,8 @@ public class RoleResDto {
     private int id;
     private String roleId;
     private String roleName;
+    private int tokenValidValue;
+    private TokenValidUnitEnum tokenValidUnit;
     private Date createDate;
     private Date updateDate;
 

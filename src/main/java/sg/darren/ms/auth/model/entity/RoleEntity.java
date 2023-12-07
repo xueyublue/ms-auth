@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
 import org.hibernate.annotations.UpdateTimestamp;
+import sg.darren.ms.auth.model.enums.TokenValidUnitEnum;
 
 import java.util.Date;
 
@@ -29,6 +30,13 @@ public class RoleEntity {
 
     @Column(name = "role_name", nullable = false)
     private String roleName;
+
+    @Column(name = "token_valid_value", nullable = false)
+    private int tokenValidValue;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = "token_valid_unit", nullable = false)
+    private TokenValidUnitEnum tokenValidUnit;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

@@ -15,11 +15,15 @@ public class RoleMapper {
         return RoleEntity.builder()
                 .roleId(dto.getRoleId())
                 .roleName(dto.getRoleName())
+                .tokenValidValue(dto.getTokenValidValue())
+                .tokenValidUnit(dto.getTokenValidUnit())
                 .build();
     }
 
     public RoleEntity updateDtoToEntity(RoleUpdateReqDto dto, RoleEntity entity) {
         entity.setRoleName(dto.getRoleName());
+        entity.setTokenValidValue(dto.getTokenValidValue());
+        entity.setTokenValidUnit(dto.getTokenValidUnit());
         return entity;
     }
 

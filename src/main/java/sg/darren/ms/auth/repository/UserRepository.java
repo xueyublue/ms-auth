@@ -13,7 +13,7 @@ import java.util.Optional;
 @Transactional
 public interface UserRepository extends JpaRepository<UserEntity, Integer> {
 
-    Optional<UserEntity> findByUsername(String username);
+    UserEntity findByUsername(String username);
 
     @Modifying
     @Query("delete from UserEntity where username = :username")

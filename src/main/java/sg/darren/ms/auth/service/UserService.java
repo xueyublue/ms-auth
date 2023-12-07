@@ -13,7 +13,7 @@ import sg.darren.ms.auth.model.user.UserUpdateReqDto;
 import sg.darren.ms.auth.repository.UserRepository;
 
 import java.util.List;
-import java.util.Optional;
+import java.util.Objects;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,11 +24,16 @@ public class UserService {
     private UserRepository userRepository;
     @Autowired
     private UserMapper userMapper;
+    @Autowired
+    private RoleService roleService;
 
     public UserResDto getUserByUsername(String username) {
-        Optional<UserEntity> entity = userRepository.findByUsername(username);
-        return entity.map(userEntity -> userMapper.entityToResDto(userEntity))
-                .orElse(null);
+        UserEntity entity = userRepository.findByUsername(username);
+        if (!Objects.isNull(entity)) {
+            return userMapper.entityToResDto(entity);
+        } else {
+            return null;
+        }
     }
 
     public List<UserResDto> getUsers() {
@@ -39,7 +44,7 @@ public class UserService {
     }
 
     public boolean isUsernameExists(String username) {
-        return userRepository.findByUsername(username).isPresent();
+        return Objects.nonNull(userRepository.findByUsername(username));
     }
 
     public UserResDto create(UserCreateReqDto dto) {
@@ -52,12 +57,12 @@ public class UserService {
     }
 
     public UserResDto updateByUsername(String username, UserUpdateReqDto dto) {
-        Optional<UserEntity> optionalEntity = userRepository.findByUsername(username);
-        if (optionalEntity.isEmpty()) {
+        UserEntity oldEntity = userRepository.findByUsername(username);
+        if (Objects.isNull(oldEntity)) {
             throw DataNotFoundException.usernameNotFound(username);
         }
-        UserEntity entity = userRepository.save(userMapper.updateDtoToEntity(dto, optionalEntity.get()));
-        return userMapper.entityToResDto(entity);
+        UserEntity savedEntity = userRepository.save(userMapper.updateDtoToEntity(dto, oldEntity));
+        return userMapper.entityToResDto(savedEntity);
     }
 
     public void deleteByUsername(String username) {
@@ -65,6 +70,11 @@ public class UserService {
             throw DataNotFoundException.usernameNotFound(username);
         }
         userRepository.deleteByUsername(username);
+    }
+
+    public void getHighestTokenValid(String username) {
+        String roles = userRepository.findByUsername(username).getRoles();
+        // TODO:
     }
 
 }
