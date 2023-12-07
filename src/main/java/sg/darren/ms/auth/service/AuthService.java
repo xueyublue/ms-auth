@@ -1,0 +1,67 @@
+package sg.darren.ms.auth.service;
+
+import jakarta.servlet.http.HttpServletRequest;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.userdetails.UserDetailsService;
+import org.springframework.stereotype.Service;
+import sg.darren.ms.auth.exception.UnauthorizedException;
+import sg.darren.ms.auth.model.auth.AuthReqDto;
+import sg.darren.ms.auth.model.auth.AuthResDto;
+import sg.darren.ms.auth.model.auth.CustUserDetails;
+
+import java.util.Date;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+@Service
+@RequiredArgsConstructor
+@Slf4j
+public class AuthService {
+
+    private final JwtService jwtService;
+    private final AuthenticationManager authenticationManager;
+    private final HttpServletRequest httpServletRequest;
+    private final UserDetailsService userDetailsService;
+
+    public String loginAndGenerateToken(AuthReqDto dto) {
+        Authentication auth = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
+        Authentication authentication = authenticationManager.authenticate(auth);
+        if (authentication.isAuthenticated()) {
+            return jwtService.generateToken(dto.getUsername());
+        } else {
+            throw new UnauthorizedException("Unauthorized.");
+        }
+    }
+
+    public AuthResDto validateToken() {
+        // extract token
+        String token = httpServletRequest.getHeader("Authorization").substring(7);
+        // extract authentication
+        Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+        if (Objects.isNull(authentication)
+                || authentication.getName() == null
+                || Objects.isNull(authentication.getPrincipal())) {
+            throw new UnauthorizedException("Unauthorized.");
+        }
+        CustUserDetails userDetails = (CustUserDetails) authentication.getPrincipal();
+        return AuthResDto.builder()
+                .username(userDetails.getUsername())
+                .token(token)
+                .roles(userDetails.getAuthorities().stream()
+                        .map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.toList()))
+                .accountExpired(!userDetails.isAccountNonExpired())
+                .accountLocked(!userDetails.isAccountNonLocked())
+                .accountCredentialsExpired(!userDetails.isCredentialsNonExpired())
+                .accountEnabled(userDetails.isEnabled())
+                .validationDate(new Date())
+                .build();
+    }
+
+}

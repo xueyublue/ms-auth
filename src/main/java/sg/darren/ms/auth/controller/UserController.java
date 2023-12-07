@@ -3,6 +3,7 @@ package sg.darren.ms.auth.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 import sg.darren.ms.auth.model.user.UserCreateReqDto;
 import sg.darren.ms.auth.model.user.UserResDto;
@@ -41,6 +42,7 @@ public class UserController {
     }
 
     @DeleteMapping("/{username}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
     public void delete(@PathVariable("username") String username) {
         userService.deleteByUsername(username);
     }
