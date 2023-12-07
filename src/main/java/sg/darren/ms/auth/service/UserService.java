@@ -6,13 +6,15 @@ import org.springframework.stereotype.Service;
 import sg.darren.ms.auth.exception.DataDuplicateException;
 import sg.darren.ms.auth.exception.DataNotFoundException;
 import sg.darren.ms.auth.model.entity.UserEntity;
+import sg.darren.ms.auth.model.enums.TokenValidUnitEnum;
+import sg.darren.ms.auth.model.role.RoleResDto;
 import sg.darren.ms.auth.model.user.UserCreateReqDto;
 import sg.darren.ms.auth.model.user.UserMapper;
 import sg.darren.ms.auth.model.user.UserResDto;
 import sg.darren.ms.auth.model.user.UserUpdateReqDto;
 import sg.darren.ms.auth.repository.UserRepository;
 
-import java.util.Arrays;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -73,9 +75,26 @@ public class UserService {
         userRepository.deleteByUsername(username);
     }
 
-    public void getHighestTokenValid(String username) {
-        List<String> roles = userRepository.findByUsername(username).getRoles();
-        // TODO:
+    public Integer getHighestTokenValid(String username) {
+        List<String> roleIds = userRepository.findByUsername(username).getRoles();
+        List<RoleResDto> roleList = roleService.getRoleByRoleIds(roleIds);
+        return roleList.stream()
+                .map(role -> {
+                    int value = role.getTokenValidValue();
+                    if (TokenValidUnitEnum.MINUTE == role.getTokenValidUnit()) {
+                        return 1000 * 60 * value;
+                    } else if (TokenValidUnitEnum.HOUR == role.getTokenValidUnit()) {
+                        return 1000 * 60 * 60 * value;
+                    } else if (TokenValidUnitEnum.DAY == role.getTokenValidUnit()) {
+                        return 1000 * 60 * 60 * 24 * value;
+                    } else {
+                        return 0;
+                    }
+                })
+                .toList()
+                .stream()
+                .sorted(Comparator.reverseOrder())
+                .toList().get(0);
     }
 
 }

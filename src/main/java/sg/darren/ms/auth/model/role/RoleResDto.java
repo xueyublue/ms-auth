@@ -6,6 +6,7 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import sg.darren.ms.auth.model.enums.TokenValidUnitEnum;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 

@@ -26,12 +26,14 @@ public class AuthService {
     private final JwtTokenService jwtTokenService;
     private final AuthenticationManager authenticationManager;
     private final HttpServletRequest httpServletRequest;
+    private final UserService userService;
 
     public String loginAndGenerateToken(AuthReqDto dto) {
         Authentication auth = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
         Authentication authentication = authenticationManager.authenticate(auth);
         if (authentication.isAuthenticated()) {
-            return jwtTokenService.generateToken(dto.getUsername());
+            int tokenValid = userService.getHighestTokenValid(dto.getUsername());
+            return jwtTokenService.generateToken(dto.getUsername(), tokenValid);
         } else {
             throw new UnauthorizedException("Unauthorized.");
         }

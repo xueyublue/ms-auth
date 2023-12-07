@@ -1,5 +1,6 @@
 package sg.darren.ms.auth.service;
 
+import io.jsonwebtoken.lang.Collections;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -30,6 +31,14 @@ public class RoleService {
             return null;
         }
         return roleMapper.entityToResDto(entity);
+    }
+
+    public List<RoleResDto> getRoleByRoleIds(List<String> roleIds) {
+        List<RoleEntity> entities = roleRepository.findByRoleIdIn(roleIds);
+        if (Collections.isEmpty(entities)) {
+            return null;
+        }
+        return entities.stream().map(roleMapper::entityToResDto).collect(Collectors.toList());
     }
 
     public List<RoleResDto> getRoles() {
