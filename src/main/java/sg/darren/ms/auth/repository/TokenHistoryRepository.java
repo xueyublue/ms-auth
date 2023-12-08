@@ -3,14 +3,10 @@ package sg.darren.ms.auth.repository;
 import jakarta.transaction.Transactional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
-import sg.darren.ms.auth.model.entity.TokenEntity;
+import sg.darren.ms.auth.model.entity.TokenHistoryEntity;
 
 @Repository
 @Transactional
-public interface TokenRepository extends JpaRepository<TokenEntity, Integer> {
-
-    TokenEntity findByToken(String token);
-
-    TokenEntity findByUsername(String username);
+public interface TokenHistoryRepository extends JpaRepository<TokenHistoryEntity, Integer> {
 
 }
