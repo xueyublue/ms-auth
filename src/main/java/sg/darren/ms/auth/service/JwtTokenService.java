@@ -6,7 +6,7 @@ import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
 import io.jsonwebtoken.io.Decoders;
 import io.jsonwebtoken.security.Keys;
-import lombok.RequiredArgsConstructor;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.stereotype.Component;
 
@@ -17,20 +17,28 @@ import java.util.Map;
 import java.util.function.Function;
 
 @Component
-@RequiredArgsConstructor
 public class JwtTokenService {
 
     public static final String SECRET = "5367566B59703373367639792F423F4528482B4D6251655468576D5A71347437";
 
-    public String generateToken(String userName, int tokenValid) {
+    private final TokenService tokenService;
+
+    JwtTokenService(@Lazy TokenService tokenService) {
+        this.tokenService = tokenService;
+    }
+
+    public String generateToken(String userName, long tokenValid) {
         Map<String, Object> claims = new HashMap<>();
-        return Jwts.builder()
+        // generate token
+        String token = Jwts.builder()
                 .setClaims(claims)
                 .setSubject(userName)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
-                // 14 days
                 .setExpiration(new Date(System.currentTimeMillis() + tokenValid))
                 .signWith(getSignKey(), SignatureAlgorithm.HS256).compact();
+        // save token to database
+        tokenService.create(token);
+        return token;
     }
 
     public String extractUsername(String token) {

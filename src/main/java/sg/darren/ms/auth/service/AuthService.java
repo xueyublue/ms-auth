@@ -32,7 +32,7 @@ public class AuthService {
         Authentication auth = new UsernamePasswordAuthenticationToken(dto.getUsername(), dto.getPassword());
         Authentication authentication = authenticationManager.authenticate(auth);
         if (authentication.isAuthenticated()) {
-            int tokenValid = userService.getHighestTokenValid(dto.getUsername());
+            long tokenValid = userService.getHighestTokenValid(dto.getUsername());
             return jwtTokenService.generateToken(dto.getUsername(), tokenValid);
         } else {
             throw new UnauthorizedException("Unauthorized.");

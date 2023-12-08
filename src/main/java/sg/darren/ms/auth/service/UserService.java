@@ -90,20 +90,24 @@ public class UserService {
         userRepository.deleteByUsername(username);
     }
 
-    public Integer getHighestTokenValid(String username) {
+    public long getHighestTokenValid(String username) {
         List<String> roleIds = userRepository.findByUsername(username).getRoles();
         List<RoleResDto> roleList = roleService.getRoleByRoleIds(roleIds);
         return roleList.stream()
                 .map(role -> {
                     int value = role.getTokenValidValue();
                     if (TokenValidUnitEnum.MINUTE == role.getTokenValidUnit()) {
-                        return 1000 * 60 * value;
+                        return 1000L * 60 * value;
                     } else if (TokenValidUnitEnum.HOUR == role.getTokenValidUnit()) {
-                        return 1000 * 60 * 60 * value;
+                        return 1000L * 60 * 60 * value;
                     } else if (TokenValidUnitEnum.DAY == role.getTokenValidUnit()) {
-                        return 1000 * 60 * 60 * 24 * value;
+                        return 1000L * 60 * 60 * 24 * value;
+                    } else if (TokenValidUnitEnum.MONTH == role.getTokenValidUnit()) {
+                        return 1000L * 60 * 60 * 24 * 30 * value;
+                    } else if (TokenValidUnitEnum.YEAR == role.getTokenValidUnit()) {
+                        return 1000L * 60 * 60 * 24 * 365 * value;
                     } else {
-                        return 0;
+                        return 0L;
                     }
                 })
                 .toList()
