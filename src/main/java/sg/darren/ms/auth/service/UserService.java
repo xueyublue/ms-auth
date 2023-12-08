@@ -1,5 +1,6 @@
 package sg.darren.ms.auth.service;
 
+import io.jsonwebtoken.lang.Collections;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -51,19 +52,33 @@ public class UserService {
     }
 
     public UserResDto create(UserCreateReqDto dto) {
+        // check if username exists
         if (isUsernameExists(dto.getUsername())) {
             throw new DataDuplicateException("Username has been registered.");
         }
+        // check if all roles are valid
+        List<RoleResDto> roles = roleService.getRoleByRoleIds(dto.getRoles());
+        if (Collections.isEmpty(roles) || dto.getRoles().size() != roles.size()) {
+            throw DataNotFoundException.roleIdNotFound(dto.getRoles().toString());
+        }
+        // save
         UserEntity entity = userMapper.createDtoToEntity(dto);
         entity = userRepository.save(entity);
         return userMapper.entityToResDto(entity);
     }
 
     public UserResDto updateByUsername(String username, UserUpdateReqDto dto) {
+        // check if all roles are valid
+        List<RoleResDto> roles = roleService.getRoleByRoleIds(dto.getRoles());
+        if (Collections.isEmpty(roles) || dto.getRoles().size() != roles.size()) {
+            throw DataNotFoundException.roleIdNotFound(dto.getRoles().toString());
+        }
+        // check if username exists
         UserEntity oldEntity = userRepository.findByUsername(username);
         if (Objects.isNull(oldEntity)) {
             throw DataNotFoundException.usernameNotFound(username);
         }
+        // save
         UserEntity savedEntity = userRepository.save(userMapper.updateDtoToEntity(dto, oldEntity));
         return userMapper.entityToResDto(savedEntity);
     }

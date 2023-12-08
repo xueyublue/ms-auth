@@ -50,9 +50,12 @@ public class AuthService {
             throw new UnauthorizedException("Unauthorized.");
         }
         CustUserDetails userDetails = (CustUserDetails) authentication.getPrincipal();
+        // build response
         return AuthValidateTokenResDto.builder()
                 .username(userDetails.getUsername())
                 .token(token)
+                .tokenIssuedDate(jwtTokenService.extractIssueAt(token))
+                .tokenExpiryDate(jwtTokenService.extractExpiration(token))
                 .roles(userDetails.getAuthorities().stream()
                         .map(GrantedAuthority::getAuthority)
                         .collect(Collectors.toList()))

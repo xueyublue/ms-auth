@@ -15,6 +15,8 @@ import java.util.List;
 public class AuthValidateTokenResDto {
 
     private String token;
+    private Date tokenIssuedDate;
+    private Date tokenExpiryDate;
     private String username;
     private List<String> roles;
     private boolean accountExpired;

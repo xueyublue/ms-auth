@@ -37,6 +37,10 @@ public class JwtTokenService {
         return extractClaim(token, Claims::getSubject);
     }
 
+    public Date extractIssueAt(String token) {
+        return extractClaim(token, Claims::getIssuedAt);
+    }
+
     public Date extractExpiration(String token) {
         return extractClaim(token, Claims::getExpiration);
     }

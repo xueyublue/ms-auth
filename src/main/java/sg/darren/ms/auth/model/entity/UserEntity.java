@@ -36,7 +36,7 @@ public class UserEntity {
     @Column(name = "full_name")
     private String fullName;
 
-    @Column(name = "email", nullable = false)
+    @Column(name = "email")
     private String email;
 
     @JdbcTypeCode(SqlTypes.JSON)
