@@ -12,7 +12,7 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class AuthResDto {
+public class AuthValidateTokenResDto {
 
     private String token;
     private String username;

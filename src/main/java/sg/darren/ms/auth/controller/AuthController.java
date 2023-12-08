@@ -6,7 +6,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import sg.darren.ms.auth.model.auth.AuthReqDto;
-import sg.darren.ms.auth.model.auth.AuthResDto;
+import sg.darren.ms.auth.model.auth.AuthValidateTokenResDto;
 import sg.darren.ms.auth.service.AuthService;
 
 @RestController
@@ -22,7 +22,7 @@ public class AuthController {
     }
 
     @PostMapping("/validateToken")
-    public AuthResDto validateToken() {
+    public AuthValidateTokenResDto validateToken() {
         return authService.validateToken();
     }
 

@@ -11,7 +11,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import sg.darren.ms.auth.exception.UnauthorizedException;
 import sg.darren.ms.auth.model.auth.AuthReqDto;
-import sg.darren.ms.auth.model.auth.AuthResDto;
+import sg.darren.ms.auth.model.auth.AuthValidateTokenResDto;
 import sg.darren.ms.auth.model.user.CustUserDetails;
 
 import java.util.Date;
@@ -39,7 +39,7 @@ public class AuthService {
         }
     }
 
-    public AuthResDto validateToken() {
+    public AuthValidateTokenResDto validateToken() {
         // extract token
         String token = httpServletRequest.getHeader("Authorization").substring(7);
         // extract authentication
@@ -50,7 +50,7 @@ public class AuthService {
             throw new UnauthorizedException("Unauthorized.");
         }
         CustUserDetails userDetails = (CustUserDetails) authentication.getPrincipal();
-        return AuthResDto.builder()
+        return AuthValidateTokenResDto.builder()
                 .username(userDetails.getUsername())
                 .token(token)
                 .roles(userDetails.getAuthorities().stream()
