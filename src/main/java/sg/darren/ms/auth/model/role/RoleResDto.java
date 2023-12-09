@@ -1,10 +1,12 @@
-package sg.darren.ms.auth.model.user;
+package sg.darren.ms.auth.model.role;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import sg.darren.ms.auth.model.enums.TokenValidUnitEnum;
 
+import java.math.BigInteger;
 import java.util.Date;
 import java.util.List;
 
@@ -12,13 +14,13 @@ import java.util.List;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserResDto {
+public class RoleResDto {
 
     private int id;
-    private String username;
-    private String fullName;
-    private String email;
-    private List<String> roles;
+    private String roleId;
+    private String roleName;
+    private int tokenValidValue;
+    private TokenValidUnitEnum tokenValidUnit;
     private Date createDate;
     private Date updateDate;
 

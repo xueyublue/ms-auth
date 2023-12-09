@@ -1,4 +1,4 @@
-package sg.darren.ms.auth.model.auth;
+package sg.darren.ms.auth.model.user;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.security.core.GrantedAuthority;
@@ -6,7 +6,6 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import sg.darren.ms.auth.model.entity.UserEntity;
 
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -21,7 +20,7 @@ public class CustUserDetails implements UserDetails {
     public CustUserDetails(UserEntity userInfo) {
         username = userInfo.getUsername();
         password = userInfo.getPassword();
-        authorities = Arrays.stream(userInfo.getRoles().split(","))
+        authorities = userInfo.getRoles().stream()
                 .map(SimpleGrantedAuthority::new)
                 .collect(Collectors.toList());
     }

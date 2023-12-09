@@ -3,10 +3,14 @@ package sg.darren.ms.auth.controller;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-import sg.darren.ms.auth.model.user.UserRegisterReqDto;
+import sg.darren.ms.auth.model.user.UserCreateReqDto;
 import sg.darren.ms.auth.model.user.UserResDto;
+import sg.darren.ms.auth.model.user.UserUpdateReqDto;
 import sg.darren.ms.auth.service.UserService;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
@@ -15,15 +19,32 @@ public class UserController {
 
     private final UserService userService;
 
-    @PostMapping("/create")
-    public String create(@RequestBody @Valid UserRegisterReqDto dto) {
-        userService.create(dto);
-        return "success";
+    @GetMapping(produces = MediaType.APPLICATION_JSON_VALUE)
+    public List<UserResDto> getUsers() {
+        return userService.getUsers();
     }
 
     @GetMapping(value = "/{username}", produces = MediaType.APPLICATION_JSON_VALUE)
     public UserResDto getUserByUserName(@PathVariable("username") String username) {
         return userService.getUserByUsername(username);
+    }
+
+    @PostMapping
+    public UserResDto create(@RequestBody @Valid UserCreateReqDto dto) {
+        return userService.create(dto);
+    }
+
+    @PutMapping("/{username}")
+    public UserResDto update(
+            @PathVariable("username") String username,
+            @RequestBody @Valid UserUpdateReqDto dto) {
+        return userService.updateByUsername(username, dto);
+    }
+
+    @DeleteMapping("/{username}")
+    @PreAuthorize("hasAuthority('ROLE_ADMIN')")
+    public void delete(@PathVariable("username") String username) {
+        userService.deleteByUsername(username);
     }
 
 }

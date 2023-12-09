@@ -7,41 +7,36 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.DynamicUpdate;
-import org.hibernate.annotations.JdbcTypeCode;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.hibernate.type.SqlTypes;
 
 import java.util.Date;
-import java.util.List;
 
 @Entity
-@Table(name = "tbl_user")
+@Table(name = "tbl_token")
 @DynamicUpdate
 @Data
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
-public class UserEntity {
+public class TokenEntity {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(name = "username", nullable = false, updatable = false, unique = true)
+    @Column(name = "username", nullable = false, updatable = false)
     private String username;
 
-    @Column(name = "password", nullable = false)
-    private String password;
+    @Column(name = "token", nullable = false, updatable = false, unique = true)
+    private String token;
 
-    @Column(name = "full_name")
-    private String fullName;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "issue_date", updatable = false)
+    private Date issueDate;
 
-    @Column(name = "email")
-    private String email;
-
-    @JdbcTypeCode(SqlTypes.JSON)
-    @Column(name = "roles", nullable = false)
-    private List<String> roles;
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "expiry_date", updatable = false)
+    private Date expiryDate;
 
     @Temporal(TemporalType.TIMESTAMP)
     @CreationTimestamp

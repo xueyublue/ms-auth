@@ -1,56 +1,119 @@
 package sg.darren.ms.auth.service;
 
+import io.jsonwebtoken.lang.Collections;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.security.core.userdetails.UserDetailsService;
-import org.springframework.security.core.userdetails.UsernameNotFoundException;
-import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import sg.darren.ms.auth.model.auth.CustUserDetails;
+import sg.darren.ms.auth.exception.DataDuplicateException;
+import sg.darren.ms.auth.exception.DataNotFoundException;
 import sg.darren.ms.auth.model.entity.UserEntity;
-import sg.darren.ms.auth.model.user.UserRegisterReqDto;
+import sg.darren.ms.auth.model.enums.TokenValidUnitEnum;
+import sg.darren.ms.auth.model.role.RoleResDto;
+import sg.darren.ms.auth.model.user.UserCreateReqDto;
+import sg.darren.ms.auth.model.user.UserMapper;
 import sg.darren.ms.auth.model.user.UserResDto;
+import sg.darren.ms.auth.model.user.UserUpdateReqDto;
 import sg.darren.ms.auth.repository.UserRepository;
 
-import java.util.Arrays;
-import java.util.Optional;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 
 @Service
-public class UserService implements UserDetailsService {
+@RequiredArgsConstructor
+public class UserService {
 
     @Autowired
     private UserRepository userRepository;
     @Autowired
-    private PasswordEncoder encoder;
-
-    @Override
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
-        Optional<UserEntity> user = userRepository.findByUsername(username);
-        return user.map((CustUserDetails::new)).orElseThrow(
-                () -> new UsernameNotFoundException("User not found with username: " + username)
-        );
-    }
-
-    public void create(UserRegisterReqDto dto) {
-        userRepository.save(UserEntity.builder()
-                .username(dto.getUsername())
-                .password(encoder.encode(dto.getPassword()))
-                .fullName(dto.getFullName())
-                .email(dto.getEmail())
-                .roles(String.join(",", dto.getRoles()))
-                .build());
-    }
+    private UserMapper userMapper;
+    @Autowired
+    private RoleService roleService;
 
     public UserResDto getUserByUsername(String username) {
-        Optional<UserEntity> entity = userRepository.findByUsername(username);
-        return entity.map(userEntity -> UserResDto.builder()
-                .username(userEntity.getUsername())
-                .fullName(userEntity.getFullName())
-                .email(userEntity.getEmail())
-                .roles(Arrays.stream(userEntity.getRoles().split(",")).toList())
-                .createDate(userEntity.getCreateDate())
-                .updateDate(userEntity.getUpdateDate())
-                .build()).orElse(null);
+        UserEntity entity = userRepository.findByUsername(username);
+        if (!Objects.isNull(entity)) {
+            return userMapper.entityToResDto(entity);
+        } else {
+            return null;
+        }
+    }
+
+    public List<UserResDto> getUsers() {
+        List<UserEntity> list = userRepository.findAll();
+        return list.stream()
+                .map(entity -> userMapper.entityToResDto(entity))
+                .collect(Collectors.toList());
+    }
+
+    public boolean isUsernameExists(String username) {
+        return Objects.nonNull(userRepository.findByUsername(username));
+    }
+
+    public UserResDto create(UserCreateReqDto dto) {
+        // check if username exists
+        if (isUsernameExists(dto.getUsername())) {
+            throw new DataDuplicateException("Username has been registered.");
+        }
+        // check if all roles are valid
+        List<RoleResDto> roles = roleService.getRoleByRoleIds(dto.getRoles());
+        if (Collections.isEmpty(roles) || dto.getRoles().size() != roles.size()) {
+            throw DataNotFoundException.roleIdNotFound(dto.getRoles().toString());
+        }
+        // save
+        UserEntity entity = userMapper.createDtoToEntity(dto);
+        entity = userRepository.save(entity);
+        return userMapper.entityToResDto(entity);
+    }
+
+    public UserResDto updateByUsername(String username, UserUpdateReqDto dto) {
+        // check if all roles are valid
+        List<RoleResDto> roles = roleService.getRoleByRoleIds(dto.getRoles());
+        if (Collections.isEmpty(roles) || dto.getRoles().size() != roles.size()) {
+            throw DataNotFoundException.roleIdNotFound(dto.getRoles().toString());
+        }
+        // check if username exists
+        UserEntity oldEntity = userRepository.findByUsername(username);
+        if (Objects.isNull(oldEntity)) {
+            throw DataNotFoundException.usernameNotFound(username);
+        }
+        // save
+        UserEntity savedEntity = userRepository.save(userMapper.updateDtoToEntity(dto, oldEntity));
+        return userMapper.entityToResDto(savedEntity);
+    }
+
+    public void deleteByUsername(String username) {
+        if (!isUsernameExists(username)) {
+            throw DataNotFoundException.usernameNotFound(username);
+        }
+        userRepository.deleteByUsername(username);
+    }
+
+    public long getHighestTokenValid(String username) {
+        List<String> roleIds = userRepository.findByUsername(username).getRoles();
+        List<RoleResDto> roleList = roleService.getRoleByRoleIds(roleIds);
+        return roleList.stream()
+                .map(role -> {
+                    int value = role.getTokenValidValue();
+                    if (TokenValidUnitEnum.MINUTE == role.getTokenValidUnit()) {
+                        return 1000L * 60 * value;
+                    } else if (TokenValidUnitEnum.HOUR == role.getTokenValidUnit()) {
+                        return 1000L * 60 * 60 * value;
+                    } else if (TokenValidUnitEnum.DAY == role.getTokenValidUnit()) {
+                        return 1000L * 60 * 60 * 24 * value;
+                    } else if (TokenValidUnitEnum.MONTH == role.getTokenValidUnit()) {
+                        return 1000L * 60 * 60 * 24 * 30 * value;
+                    } else if (TokenValidUnitEnum.YEAR == role.getTokenValidUnit()) {
+                        return 1000L * 60 * 60 * 24 * 365 * value;
+                    } else {
+                        return 0L;
+                    }
+                })
+                .toList()
+                .stream()
+                .sorted(Comparator.reverseOrder())
+                .toList().get(0);
     }
 
 }
