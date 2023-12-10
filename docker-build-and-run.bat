@@ -1,8 +1,8 @@
 call mvn clean install
 
-docker rm -f ms-auth
+call docker rm -f ms-auth
 
-docker image rm darren/ms-auth
+call docker image rm darren/ms-auth
 
 call docker build . -t darren/ms-auth
 
